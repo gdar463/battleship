@@ -7,6 +7,7 @@ public class Cell {
     CellType type;
     /**
      * Riferimento alla nave di appartenza, null se non rappresenta una nave
+     * TODO: refactor per eliminare doppia reference
      */
     Ship ship;
 
