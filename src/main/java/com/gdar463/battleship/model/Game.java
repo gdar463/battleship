@@ -1,9 +1,12 @@
 package com.gdar463.battleship.model;
 
+import com.gdar463.battleship.database.BucketType;
+import com.gdar463.battleship.database.Database;
+
 /**
  * Rappresenta una partita
  */
-public class Game {
+public class Game implements CsvSerializable<Game> {
     // Teoricamente univoco per le partite
     int id;
     Field field1, field2;
@@ -11,17 +14,24 @@ public class Game {
     GameTurn turn;
     GameStatus status;
 
-    public Game(User player1, User player2) {
-        this(player1, player2, GameTurn.PLAYER_1);
+    public Game() {}
+    public Game(int id, User player1, User player2) {
+        this(id, player1, player2, GameTurn.PLAYER_1);
     }
-
-    public Game(User player1, User player2, GameTurn turn) {
-        this.id = 4; // temporaneamente
+    public Game(int id, User player1, User player2, GameTurn turn) {
         this.player1 = player1;
         this.player2 = player2;
         this.turn = turn;
         this.status = GameStatus.PREPARAZIONE;
-        // Costruisce campi vuoti
+    }
+
+    @Override
+    public Game fromCsv(String file) {
+        return new Game((User) Database.INSTANCE.get(BucketType.USER, "0"), (User) Database.INSTANCE.get(BucketType.USER, "1"));
+    }
+    @Override
+    public String toCsv() {
+        return "";
     }
 
     public int getId() {

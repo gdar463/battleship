@@ -21,6 +21,9 @@ public class Field {
         this.cells = CsvReader.readCsv(path);
         this.ships = ShipDetector.getShips(cells);
     }
+    public Field(List<Cell[]> cells) {
+        this.cells = cells;
+    }
     /**
      * Costruttore a partire dalle le liste già pronte
      * @param cells lista di celle
