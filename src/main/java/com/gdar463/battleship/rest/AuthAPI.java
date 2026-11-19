@@ -6,20 +6,22 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-@Path("/api/auth")
+@Path("/auth")
 public class AuthAPI {
     /**
-     * Permette il login attraverso username e password.
+     * Permette il login attraverso username e password, inviando nel header Set-Cookie: "Authentication: Bearer {JWT}".
      * @param body contiene "username" e "password" come stringhe in formato JSON
      * @return JSON con "accessToken" che rappresenta JWT firmato dal server con payload lo username
      */
     @POST
     @Path("/login")
-    @Consumes("application/json")
-    @Produces("application/json")
-    public String login(String body) {
-        return "{}";
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(String body) {
+        return Response.accepted().build();
     }
 
     /**
@@ -29,10 +31,10 @@ public class AuthAPI {
      */
     @POST
     @Path("/signup")
-    @Consumes("application/json")
-    @Produces("application/json")
-    public String signup(String body) {
-        return "{}";
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response signup(String body) {
+        return Response.accepted().build();
     }
 
     /**
@@ -42,7 +44,7 @@ public class AuthAPI {
      */
     @POST
     @Path("/change-password")
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     public void changePassword(@Context HttpHeaders headers, String body) {
     }
 }

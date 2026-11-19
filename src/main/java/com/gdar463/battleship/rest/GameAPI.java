@@ -1,5 +1,8 @@
 package com.gdar463.battleship.rest;
 
+import com.gdar463.battleship.database.BucketType;
+import com.gdar463.battleship.database.Database;
+import com.gdar463.battleship.model.Game;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -10,8 +13,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
-@Path("/api/game")
+@Path("/game")
 public class GameAPI {
     /**
      * Crea una nuova partita con un altro giocatore.
@@ -20,9 +24,13 @@ public class GameAPI {
      * @return stato del nuovo gioco (id, stadio, turno, celle) in formato JSON
      */
     @POST
-    @Consumes("application/json")
-    @Produces("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public String createGame(@Context HttpHeaders headers, JsonObject body) {
+        Game out = new Game();
+
+        int id = Integer.parseInt(Database.INSTANCE.createOrUpdate(BucketType.GAME, out, null));
+        out.setId(id);
         return "{}";
     }
 
@@ -34,7 +42,7 @@ public class GameAPI {
      */
     @GET
     @Path("/{id}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getState(@Context HttpHeaders headers, @PathParam("id") int id) {
         return "{}";
     }
@@ -49,7 +57,7 @@ public class GameAPI {
      */
     @POST
     @Path("/{id}/ships")
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     public void placeShips(@Context HttpHeaders headers, @PathParam("id") int id, String body) {
     }
 
@@ -61,7 +69,7 @@ public class GameAPI {
      */
     @GET
     @Path("/{id}/ships")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getShips(@Context HttpHeaders headers, @PathParam("id") int id) {
         return "{}";
     }
@@ -74,7 +82,7 @@ public class GameAPI {
      */
     @GET
     @Path("/{id}/cells")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String getCells(@Context HttpHeaders headers, @PathParam("id") int id) {
         return "{}";
     }
@@ -90,7 +98,7 @@ public class GameAPI {
      */
     @POST
     @Path("/{id}/play")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public String playMove(@Context HttpHeaders headers, @PathParam("id") int id, @QueryParam("cell") String cell) {
         return "{}";
     }

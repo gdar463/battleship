@@ -8,7 +8,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 
-@Path("/api/game/{id}")
+@Path("/game/{id}")
 public class ExportAPI {
     /**
      * Ritorna le celle di un gioco in csv.

@@ -1,6 +1,6 @@
 package com.gdar463.battleship.database;
 
-import com.gdar463.battleship.model.CsvSerializable;
+import com.gdar463.battleship.model.DbObject;
 import com.gdar463.battleship.model.Game;
 import com.gdar463.battleship.model.User;
 
@@ -9,10 +9,10 @@ public enum BucketType {
     GAME("game", Game.class);
 
     private final String path;
-    private final Class<? extends CsvSerializable<?>> clazz;
-    private int count = 0;
+    private final Class<? extends DbObject<?>> clazz;
+    private int nextId = 0;
 
-    BucketType(String path, Class<? extends CsvSerializable<?>> clazz) {
+    BucketType(String path, Class<? extends DbObject<?>> clazz) {
         this.path = path;
         this.clazz = clazz;
     }
@@ -20,11 +20,14 @@ public enum BucketType {
     public String getPath() {
         return path;
     }
-    public Class<? extends CsvSerializable<?>> getClazz()  { return clazz;}
-    public int getCount() {
-        return count;
+    public Class<? extends DbObject<?>> getClazz()  { return clazz;}
+    public int getNextId() {
+        return nextId;
     }
-    public void increaseCount() {
-        this.count++;
+    public void setNextId(int nextId) {
+        this.nextId = nextId;
+    }
+    public void increaseId() {
+        this.nextId++;
     }
 }

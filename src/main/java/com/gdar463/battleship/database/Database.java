@@ -1,14 +1,12 @@
 package com.gdar463.battleship.database;
 
-import com.gdar463.battleship.model.CsvSerializable;
+import com.gdar463.battleship.model.DbObject;
 
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
 public class Database {
     public static Database INSTANCE = new Database();
+    private static final String STATE_PATH = "state.bin";
     private final Path db;
 
     Database() {
@@ -19,6 +17,20 @@ public class Database {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        for (BucketType value : BucketType.values()) {
+            Path state_file = db.resolve(value.getPath()).resolve(STATE_PATH);
+            if (Files.exists(state_file)) {
+                String state;
+                try {
+                    state = Files.readString(state_file);
+                } catch (Exception e) {
+                    throw new RuntimeException();
+                }
+                if (!state.isEmpty()) {
+                    value.setNextId(Integer.parseInt(state));
+                }
+            }
+        }
     }
 
     public Object get(BucketType bucket, String id) {
@@ -26,29 +38,40 @@ public class Database {
         if (!Files.exists(file)) {
             return null;
         }
-        CsvSerializable<?> clazz = bucket.getClazz().cast(CsvSerializable.class);
+        DbObject<?> clazz = bucket.getClazz().cast(DbObject.class);
         String out;
         try {
             out = Files.readString(file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return clazz.fromCsv(out);
+        return clazz.fromCsv(out, Integer.parseInt(id));
     }
 
-    public void create(BucketType bucket, CsvSerializable<?> object) throws FileAlreadyExistsException {
-        String id = String.valueOf(bucket.getCount());
-        Path file = internalGet(bucket, id);
-        if (Files.exists(file)) {
-            throw new FileAlreadyExistsException(file.toString());
+    public String createOrUpdate(BucketType bucket, DbObject<?> object, String id) {
+        boolean newId = false;
+        if (id == null) {
+            id = String.valueOf(bucket.getNextId());
+            object.setId(Integer.parseInt(id));
+            newId = true;
         }
+        Path file = internalGet(bucket, id);
         String out = object.toCsv();
         try {
-            Files.writeString(file, out);
+            Files.writeString(file, out, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        bucket.increaseCount();
+        if (newId) {
+            bucket.increaseId();
+            Path state_file = db.resolve(bucket.getPath()).resolve(STATE_PATH);
+            try {
+                Files.writeString(state_file, Integer.toString(bucket.getNextId()), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return id;
     }
 
     private Path internalGet(BucketType bucket, String id) {

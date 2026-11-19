@@ -10,30 +10,38 @@ import java.util.List;
  * Rappresenta il campo di battaglia, ovvero le celle e le navi
  */
 public class Field {
+    int x, y;
     List<Cell[]> cells;
     List<Ship> ships;
 
-    /**
-     * Costruttore a partire dal percorso del file csv
-     * @param path percorso al file csv
-     */
-    public Field(String path) throws FileNotFoundException {
-        this.cells = CsvReader.readCsv(path);
-        this.ships = ShipDetector.getShips(cells);
+    public Field(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
-    public Field(List<Cell[]> cells) {
-        this.cells = cells;
-    }
-    /**
-     * Costruttore a partire dalle le liste già pronte
-     * @param cells lista di celle
-     * @param ships lista di navi
-     */
-    public Field(List<Cell[]> cells, List<Ship> ships) {
-        this.cells = cells;
-        this.ships = ships;
-    }
+//    /**
+//     * Costruttore a partire dal percorso del file csv
+//     * @param path percorso al file csv
+//     */
+//    public Field(List<Cell[]> cells) {
+//        this.cells = cells;
+//    }
+//    /**
+//     * Costruttore a partire dalle le liste già pronte
+//     * @param cells lista di celle
+//     * @param ships lista di navi
+//     */
+//    public Field(List<Cell[]> cells, List<Ship> ships) {
+//        this.cells = cells;
+//        this.ships = ships;
+//    }
 
+
+    public int getX() {
+        return x;
+    }
+    public int getY() {
+        return y;
+    }
     /**
      * Ottiene le celle
      * @return lista di celle
@@ -47,5 +55,11 @@ public class Field {
      */
     public List<Ship> getShips() {
         return ships;
+    }
+    public void setCells(List<Cell[]> cells) {
+        this.cells = cells;
+    }
+    public void setShips(List<Ship> ships) {
+        this.ships = ships;
     }
 }
