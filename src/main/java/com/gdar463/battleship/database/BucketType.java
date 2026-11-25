@@ -1,6 +1,5 @@
 package com.gdar463.battleship.database;
 
-import com.gdar463.battleship.model.DbObject;
 import com.gdar463.battleship.model.Game;
 import com.gdar463.battleship.model.User;
 

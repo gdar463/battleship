@@ -2,6 +2,7 @@ package com.gdar463.battleship.model;
 
 import com.gdar463.battleship.database.BucketType;
 import com.gdar463.battleship.database.Database;
+import com.gdar463.battleship.database.DbObject;
 import com.gdar463.battleship.service.CsvReader;
 import com.gdar463.battleship.service.ShipDetector;
 

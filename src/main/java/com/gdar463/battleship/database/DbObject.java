@@ -1,7 +1,7 @@
-package com.gdar463.battleship.model;
+package com.gdar463.battleship.database;
 
 public abstract class DbObject<T> {
-    int id = -1;
+    protected int id = -1;
 
     abstract public T fromCsv(String file, int id);
     abstract public String toCsv();

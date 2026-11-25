@@ -1,7 +1,5 @@
 package com.gdar463.battleship.database;
 
-import com.gdar463.battleship.model.DbObject;
-
 import java.nio.file.*;
 
 public class Database {

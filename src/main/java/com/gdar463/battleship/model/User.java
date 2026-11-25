@@ -7,6 +7,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.gdar463.battleship.database.BucketType;
 import com.gdar463.battleship.database.Database;
+import com.gdar463.battleship.database.DbObject;
+import org.mindrot.jbcrypt.BCrypt;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
@@ -44,7 +46,7 @@ public class User extends DbObject<User> {
 
     public String createJWT() {
         JsonObject payload = Json.createObjectBuilder()
-                .add("id", this.id)
+                .add("username", this.username)
                 .build();
         StringWriter out = new StringWriter();
         JsonWriter writer = Json.createWriter(out);
@@ -64,8 +66,11 @@ public class User extends DbObject<User> {
         JsonReader jsonReader = Json.createReader(new StringReader(decoded.getPayload()));
         JsonObject obj = jsonReader.readObject();
         jsonReader.close();
-        int id = obj.getInt("id");
-        return (User) Database.INSTANCE.get(BucketType.USER, Integer.toString(id));
+        String username = obj.getString("username");
+        return (User) Database.INSTANCE.get(BucketType.USER, username);
+    }
+    public boolean verifyPassword(String password) {
+        return BCrypt.checkpw(password, this.password);
     }
 
     public String getUsername() {
@@ -77,4 +82,5 @@ public class User extends DbObject<User> {
     public String getPassword() {
         return password;
     }
+
 }

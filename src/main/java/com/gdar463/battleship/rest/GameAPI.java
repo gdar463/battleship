@@ -31,6 +31,7 @@ public class GameAPI {
 
         int id = Integer.parseInt(Database.INSTANCE.createOrUpdate(BucketType.GAME, out, null));
         out.setId(id);
+
         return "{}";
     }
 
