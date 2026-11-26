@@ -18,10 +18,11 @@ public class Game extends DbObject<Game> {
     GameTurn turn;
     GameStatus status;
 
-    public Game() {}
+    public Game() {
+    }
 
     @Override
-    public Game fromCsv(String file, int id) {
+    public Game fromCsv(String file, String id) {
         this.id = id;
         String[] lines = file.split("\n");
         String[] parts = lines[0].split(",");
@@ -45,6 +46,7 @@ public class Game extends DbObject<Game> {
         out.field2.setShips(ShipDetector.getShips(out.field2.getCells()));
         return out;
     }
+
     @Override
     public String toCsv() {
         StringBuilder out = new StringBuilder();
@@ -85,21 +87,47 @@ public class Game extends DbObject<Game> {
         return out.toString();
     }
 
+
+    public void setTurn(GameTurn turn) {
+        this.turn = turn;
+    }
+
+    public void setPlayer2(User player2) {
+        this.player2 = player2;
+    }
+
+    public void setPlayer1(User player1) {
+        this.player1 = player1;
+    }
+
+    public void setField2(Field field2) {
+        this.field2 = field2;
+    }
+
+    public void setField1(Field field1) {
+        this.field1 = field1;
+    }
+
     public Field getField1() {
         return field1;
     }
+
     public Field getField2() {
         return field2;
     }
+
     public User getPlayer1() {
         return player1;
     }
+
     public User getPlayer2() {
         return player2;
     }
+
     public GameTurn getTurn() {
         return turn;
     }
+
     public GameTurn switchTurn() {
         if (turn == GameTurn.PLAYER_1) {
             turn = GameTurn.PLAYER_2;
@@ -108,9 +136,11 @@ public class Game extends DbObject<Game> {
         }
         return turn;
     }
+
     public GameStatus getStatus() {
         return status;
     }
+
     public GameStatus nextStep() {
         if (status == GameStatus.PREPARAZIONE) {
             status = GameStatus.IN_PARTITA;

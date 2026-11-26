@@ -31,14 +31,7 @@ public class AuthAPI {
             return Response.status(401).build();
         }
         String jwt = user.createJWT();
-        NewCookie tokenCookie = new NewCookie.Builder("accessToken")
-                .value(jwt)
-                .path("/")
-                .maxAge(60 * 60 * 24)
-                .sameSite(NewCookie.SameSite.LAX)
-                .build();
         return Response.ok("{\"accessToken\":\"" + jwt + "\"}")
-                .cookie(tokenCookie)
                 .build();
     }
 

@@ -28,10 +28,11 @@ public class User extends DbObject<User> {
     String username;
     String password;
 
-    public User()  {}
+    public User() {
+    }
 
     @Override
-    public User fromCsv(String file, int id) {
+    public User fromCsv(String file, String id) {
         this.id = id;
         String[] parts = file.split(",");
         User out = new User();
@@ -39,6 +40,7 @@ public class User extends DbObject<User> {
         out.password = parts[1];
         return out;
     }
+
     @Override
     public String toCsv() {
         return username + "," + password;
@@ -58,6 +60,7 @@ public class User extends DbObject<User> {
                 .withPayload(out.toString())
                 .sign(JWT_ALGO);
     }
+
     public static User verifyJWT(String jwt) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(JWT_ALGO)
                 .withIssuer(JWT_ISSUER)
@@ -69,6 +72,7 @@ public class User extends DbObject<User> {
         String username = obj.getString("username");
         return (User) Database.INSTANCE.get(BucketType.USER, username);
     }
+
     public boolean verifyPassword(String password) {
         return BCrypt.checkpw(password, this.password);
     }
@@ -76,9 +80,11 @@ public class User extends DbObject<User> {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
     public String getPassword() {
         return password;
     }

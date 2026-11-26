@@ -2,7 +2,10 @@ package com.gdar463.battleship.rest;
 
 import com.gdar463.battleship.database.BucketType;
 import com.gdar463.battleship.database.Database;
+import com.gdar463.battleship.model.Field;
 import com.gdar463.battleship.model.Game;
+import com.gdar463.battleship.model.GameTurn;
+import com.gdar463.battleship.model.User;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -11,34 +14,54 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.*;
+
+import java.util.UUID;
 
 @Path("/game")
 public class GameAPI {
     /**
      * Crea una nuova partita con un altro giocatore.
+     *
      * @param headers http headers, per token
-     * @param body contiene "opponent" ovvero lo username di un altro giocatore
+     * @param body    contiene opponent, x, y
      * @return stato del nuovo gioco (id, stadio, turno, celle) in formato JSON
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createGame(@Context HttpHeaders headers, JsonObject body) {
+    public Response createGame(@Context HttpHeaders headers, JsonObject body) {
+        String jwt = headers.getHeaderString("Authorization").split(" ")[1];
+        User user = User.verifyJWT(jwt);
+        if (user == null) {
+            return Response.status(401).build();
+        }
+        User player2 = (User) Database.INSTANCE.get(BucketType.USER, body.getString("opponent"));
+        if (player2 == null) {
+            return Response.status(400)
+                    .entity("{\"error\":\"opponent not found\"}")
+                    .build();
+        }
+        int x = body.getInt("x");
+        int y = body.getInt("y");
         Game out = new Game();
+        out.setPlayer1(user);
+        out.setPlayer2(player2);
+        out.setField1(new Field(x, y));
+        out.setField2(new Field(x, y));
+        out.setTurn(GameTurn.PLAYER_1);
 
-        int id = Integer.parseInt(Database.INSTANCE.createOrUpdate(BucketType.GAME, out, null));
+        String id = Database.INSTANCE.createOrUpdate(BucketType.GAME, out, UUID.randomUUID().toString());
         out.setId(id);
 
-        return "{}";
+        return Response.status(201).build();
     }
 
     /**
      * Ritorna lo stato del gioco.
+     *
      * @param headers http headers, per token
-     * @param id id del gioco richiesto
+     * @param id      id del gioco richiesto
      * @return stato del gioco (id, stadio, turno, avversario) in formato JSON
      */
     @GET
@@ -52,9 +75,10 @@ public class GameAPI {
      * Piazza le navi del giocatore corrente e passa il turno, se il gioco è in preparazione ed è proprio turno.
      * <p>
      * Se entrambi i giocatori hanno piazzato le navi, il gioco inizia.
+     *
      * @param headers http headers, per token
-     * @param id id del gioco richiesto
-     * @param body contiene lista di navi come oggetti con "cell", "length", "direction" ("right"/"down")
+     * @param id      id del gioco richiesto
+     * @param body    contiene lista di navi come oggetti con "cell", "length", "direction" ("right"/"down")
      */
     @POST
     @Path("/{id}/ships")
@@ -64,8 +88,9 @@ public class GameAPI {
 
     /**
      * Ritorna le navi del giocatore corrente.
+     *
      * @param headers http headers, per token
-     * @param id id del gioco richiesto
+     * @param id      id del gioco richiesto
      * @return contiene lista di navi come oggetti con "cells" (lista di celle con coordinata e stato)
      */
     @GET
@@ -77,8 +102,9 @@ public class GameAPI {
 
     /**
      * Ritorna le celle di entrambi i giocatori.
+     *
      * @param headers http headers, per token
-     * @param id id del gioco richiesto
+     * @param id      id del gioco richiesto
      * @return contiene "yours" e "theirs" con i campi del giocatore corrente e dell'avversario, rispettivamente
      */
     @GET
@@ -92,9 +118,10 @@ public class GameAPI {
      * Colpisce una cella e passa il turno, se il gioco è iniziato ed è il proprio turno.
      * <p>
      * Se tutte le navi dell'avversario sono affondate, il gioco finisce.
+     *
      * @param headers http headers, per token
-     * @param id id del gioco richiesto
-     * @param cell coordinata della cella richiesta
+     * @param id      id del gioco richiesto
+     * @param cell    coordinata della cella richiesta
      * @return contiene "status" (del gioco) e "result" ("colpito"/"mancato")
      */
     @POST

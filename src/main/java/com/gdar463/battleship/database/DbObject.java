@@ -1,15 +1,17 @@
 package com.gdar463.battleship.database;
 
 public abstract class DbObject<T> {
-    protected int id = -1;
+    protected String id;
 
-    abstract public T fromCsv(String file, int id);
+    abstract public T fromCsv(String file, String id);
+
     abstract public String toCsv();
 
-    public int getId() {
+    public String getId() {
         return id;
     }
-    public void setId(int id) {
+
+    public void setId(String id) {
         this.id = id;
     }
 }
